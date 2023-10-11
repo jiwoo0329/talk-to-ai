@@ -1,16 +1,40 @@
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import styled from "styled-components";
 
+interface ChatType {
+  text: string;
+  whose: string; // yours || mine
+}
+
 function App() {
+  const [chatList, setChatList] = useState<Array<ChatType>>([
+    { text: "너의 텍스트", whose: "yours" },
+    { text: "나의 텍스트", whose: "mine" },
+  ]);
+
+  const submitForm = (e: any) => {
+    e.preventDefault();
+
+    setChatList([...chatList, { text: e.target["text"].value, whose: "mine" }]);
+  };
+
   return (
     <Main>
       <MainBox>
         <div id="chat-content">
-          <ChatBox>너의</ChatBox>
-          <ChatBox className="mine">나의</ChatBox>
+          {chatList.map((item, idx) => (
+            <React.Fragment key={idx}>
+              {item.whose === "yours" ? (
+                <ChatBox>{item.text}</ChatBox>
+              ) : (
+                <ChatBox className="mine">{item.text}</ChatBox>
+              )}
+            </React.Fragment>
+          ))}
         </div>
-        <EnterText>
-          <input type="text"></input>
+        <EnterText onSubmit={submitForm} autoComplete="off">
+          <input type="text" name="text"></input>
           <button type="submit">Enter</button>
         </EnterText>
       </MainBox>
@@ -19,7 +43,6 @@ function App() {
 }
 
 export default App;
-
 
 const Main = styled.div`
   background-color: rgb(241 245 249);
@@ -49,6 +72,7 @@ const ChatBox = styled.div`
   margin: 10px 0;
   max-width: 300px;
   border-radius: 5px;
+  word-break:break-all;
 
   &.mine {
     background-color: rgb(220 252 231);
