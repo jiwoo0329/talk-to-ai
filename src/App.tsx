@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import styled from "styled-components";
+import chatGpt from "chatGPT";
 
 interface ChatType {
   text: string;
@@ -16,7 +17,12 @@ function App() {
   const submitForm = (e: any) => {
     e.preventDefault();
 
-    setChatList([...chatList, { text: e.target["text"].value, whose: "mine" }]);
+    const myChat = e.target["text"].value;
+
+    setChatList([...chatList, { text: myChat, whose: "mine" }]);
+
+    chatGpt(myChat);
+
   };
 
   return (
@@ -63,6 +69,13 @@ const MainBox = styled.div`
     flex-grow: 1;
     overflow-y: scroll;
     padding: 20px 15px;
+    -ms-overflow-style: none; /* 인터넷 익스플로러 */
+    scrollbar-width: none; /* 파이어폭스 */
+
+    /* ( 크롬, 사파리, 오페라, 엣지 ) 동작 */
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `;
 
@@ -72,7 +85,7 @@ const ChatBox = styled.div`
   margin: 10px 0;
   max-width: 300px;
   border-radius: 5px;
-  word-break:break-all;
+  word-break: break-all;
 
   &.mine {
     background-color: rgb(220 252 231);
