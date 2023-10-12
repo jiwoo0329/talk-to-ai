@@ -14,16 +14,24 @@ function App() {
     { text: "나의 텍스트", whose: "mine" },
   ]);
 
+  const [answer, setAnswer] = useState<string>("");
+
   const submitForm = (e: any) => {
     e.preventDefault();
 
     const myChat = e.target["text"].value;
+    e.target["text"].value = "";
 
     setChatList([...chatList, { text: myChat, whose: "mine" }]);
 
-    chatGpt(myChat);
-
+    chatGpt(myChat, setAnswer);
   };
+
+  useEffect(() => {
+    if (answer.length > 0) {
+      setChatList([...chatList, { text: answer, whose: "yours" }]);
+    }
+  }, [answer]);
 
   return (
     <Main>
