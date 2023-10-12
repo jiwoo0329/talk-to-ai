@@ -27,6 +27,8 @@ function App() {
   useEffect(() => {
     if (answer.length > 0) {
       setChatList([...chatList, { text: answer, whose: "yours" }]);
+
+      console.log("gg")
     }
   }, [answer]);
 
