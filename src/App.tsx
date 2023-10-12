@@ -9,10 +9,7 @@ interface ChatType {
 }
 
 function App() {
-  const [chatList, setChatList] = useState<Array<ChatType>>([
-    { text: "너의 텍스트", whose: "yours" },
-    { text: "나의 텍스트", whose: "mine" },
-  ]);
+  const [chatList, setChatList] = useState<Array<ChatType>>([]);
 
   const [answer, setAnswer] = useState<string>("");
 
