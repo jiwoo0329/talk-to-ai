@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import styled, { keyframes } from "styled-components";
 import chatGpt from "chatGPT";
@@ -46,7 +46,7 @@ function App() {
       <MainBox>
         <div id="chat-content">
           {chatList.map((item, idx) => (
-            <React.Fragment key={idx}>
+            <div key={idx} className={item.whose === "yours" ? "" : "mine"}>
               {item.whose === "yours" ? (
                 <ChatBox>
                   {isLoading && item.text === "" ? <Spinner /> : item.text}
@@ -54,7 +54,7 @@ function App() {
               ) : (
                 <ChatBox className="mine">{item.text}</ChatBox>
               )}
-            </React.Fragment>
+            </div>
           ))}
         </div>
 
@@ -95,17 +95,24 @@ const MainBox = styled.div`
     &::-webkit-scrollbar {
       display: none;
     }
+
+    div {
+      margin: 10px 0;
+      &.mine {
+        text-align: right;
+      }
+    }
   }
 `;
 
-const ChatBox = styled.div`
+const ChatBox = styled.span`
   background-color: rgb(217 249 157);
   padding: 5px 10px;
-  margin: 10px 0;
+  min-width: 20px;
   max-width: 300px;
   border-radius: 5px;
   word-break: break-all;
-
+  display: inline-block;
   &.mine {
     background-color: rgb(220 252 231);
     margin-left: auto;
