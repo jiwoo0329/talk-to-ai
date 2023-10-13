@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import chatGpt from "chatGPT";
 
 interface ChatType {
@@ -10,25 +10,34 @@ interface ChatType {
 
 function App() {
   const [chatList, setChatList] = useState<Array<ChatType>>([]);
-
   const [answer, setAnswer] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const submitForm = (e: any) => {
     e.preventDefault();
 
     const myChat = e.target["text"].value;
-    e.target["text"].value = "";
+    e.target["text"].value = ""; // 입력값 초기화
 
-    setChatList([...chatList, { text: myChat, whose: "mine" }]);
+    let arr: ChatType[] = [
+      { text: myChat, whose: "mine" },
+      { text: "", whose: "yours" },
+    ];
 
+    if (chatList.length > 0) {
+      setChatList([...chatList, ...arr]); // 내 체팅 추가
+    } else {
+      setChatList(arr);
+    }
+    setIsLoading(true);
     chatGpt(myChat, setAnswer);
   };
 
   useEffect(() => {
     if (answer.length > 0) {
-      setChatList([...chatList, { text: answer, whose: "yours" }]);
-
-      console.log("gg")
+      chatList[chatList.length - 1] = { text: answer, whose: "yours" };
+      setChatList([...chatList]);
+      setIsLoading(false);
     }
   }, [answer]);
 
@@ -39,13 +48,16 @@ function App() {
           {chatList.map((item, idx) => (
             <React.Fragment key={idx}>
               {item.whose === "yours" ? (
-                <ChatBox>{item.text}</ChatBox>
+                <ChatBox>
+                  {isLoading && item.text === "" ? <Spinner /> : item.text}
+                </ChatBox>
               ) : (
                 <ChatBox className="mine">{item.text}</ChatBox>
               )}
             </React.Fragment>
           ))}
         </div>
+
         <EnterText onSubmit={submitForm} autoComplete="off">
           <input type="text" name="text"></input>
           <button type="submit">Enter</button>
@@ -123,5 +135,33 @@ const EnterText = styled.form`
       background-color: rgb(214 211 209);
       cursor: pointer;
     }
+  }
+`;
+
+const rotate = keyframes`
+100%   {transform: rotate(360deg)}
+`;
+const prixClipFix = keyframes`
+   0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+        25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+        50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+        75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+        100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+    `;
+
+const Spinner = styled.p`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  position: relative;
+  animation: ${rotate} 1s linear infinite;
+  &::before {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    inset: 0px;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    animation: ${prixClipFix} 2s linear infinite;
   }
 `;
