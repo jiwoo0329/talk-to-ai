@@ -2,17 +2,24 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import styled, { keyframes } from "styled-components";
 import chatGpt from "chatGPT";
+import type { answerType } from "types/answer";
 
 interface ChatType {
   text: string;
+  colorList?: string[];
   whose: string; // yours || mine
 }
 
 function App() {
   const [chatList, setChatList] = useState<Array<ChatType>>([]);
-  const [answer, setAnswer] = useState<string>("");
+  const [answer, setAnswer] = useState<answerType>({
+    reasonForRecommendation: "",
+    colorlist: [],
+  });
   const [isLoading, setIsLoading] = useState(true);
-
+  {
+    /* {"reasonForRecommendation":"여수 밤바다를 표현하기 위해 파란색 계열의 색상을 추천합니다.","colorlist":["#003366","#006699","#0099CC","#00CCFF","#66CCFF"]} */
+  }
   const submitForm = (e: any) => {
     e.preventDefault();
 
@@ -34,8 +41,12 @@ function App() {
   };
 
   useEffect(() => {
-    if (answer.length > 0) {
-      chatList[chatList.length - 1] = { text: answer, whose: "yours" };
+    if (answer.reasonForRecommendation.length > 0) {
+      chatList[chatList.length - 1] = {
+        text: answer.reasonForRecommendation,
+        colorList: answer.colorlist,
+        whose: "yours",
+      };
       setChatList([...chatList]);
       setIsLoading(false);
     }
@@ -49,7 +60,18 @@ function App() {
             <div key={idx} className={item.whose === "yours" ? "" : "mine"}>
               {item.whose === "yours" ? (
                 <ChatBox>
-                  {isLoading && item.text === "" ? <Spinner /> : item.text}
+                  {isLoading && item.text === "" ? (
+                    <Spinner />
+                  ) : (
+                    <div>
+                      {item.text}
+                      {item.colorList?.map((color, index) => (
+                        <div key={index} style={{ backgroundColor: color }}>
+                          {color}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </ChatBox>
               ) : (
                 <ChatBox className="mine">{item.text}</ChatBox>
